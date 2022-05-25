@@ -37,7 +37,7 @@ winning_county_count = 0
 winning_county_percentage = 0
 
 # Open the election results and read the file.
-with open('c:/users/Takemi Scott Oshiro/Election_Analysis/Resources/election_results.csv') as election_data:
+with open(file_to_load) as election_data:
     file_reader = csv.reader(election_data)
 
     # Read and print the header row.
@@ -67,6 +67,7 @@ with open('c:/users/Takemi Scott Oshiro/Election_Analysis/Resources/election_res
 
         # If the county does not match any existing county.
         if county_name not in county_options:
+
             # Add the county name to the county list.
             county_options.append(county_name)
 
@@ -76,36 +77,57 @@ with open('c:/users/Takemi Scott Oshiro/Election_Analysis/Resources/election_res
         # Add a vote to the county's total vote count.
         county_votes[county_name] += 1
 
-# Determine the percentage and total votes for each county.
-    print("\nCOUNTY RESULTS\n")
+# Save the results to our text file.
+with open(file_to_save, "w") as txt_file:
+
+    # Print the final vote count (to terminal)
+    election_results = (
+        f"\nELECTION RESULTS\n"
+        f"-------------------------\n"
+        f"TOTAL VOTES: {total_votes:,}\n"
+        f"-------------------------\n\n"
+        f"RESULTS BY COUNTY:\n")
+    print(election_results, end="")
+
+    txt_file.write(election_results)
+
+    # Determine the percentage and total votes for each county.  
     for county_name in county_votes:
 
         # Get the total county votes count.
         votes = county_votes[county_name]
+
         # Calculate percentage of votes per county.
         vote_percentage = float(votes) / float(total_votes) * 100
+
         # Print county vote results.
-        
+        # print("\nCOUNTY RESULTS\n")
         county_results = (f"{county_name}: {vote_percentage:.1f}% ({votes:,})\n")
-        print(county_results)
-            
-        if (votes > winning_county_count) and (vote_percentage >       winning_county_percentage):
+        print(county_results, end="")
+        
+        txt_file.write(county_results) #moved to here#
+
+        if (votes > winning_county_count) and (vote_percentage > winning_county_percentage):
             winning_county_count = votes
             winning_county = county_name
             winning_county_percentage = vote_percentage
 
-    # Print the winning county turnout information.
+        # Print the winning county turnout information.
     largest_county_turnout = (
         f"\n-------------------------\n"
         f"Largest County Turnout: {winning_county}\n"
-        f"-------------------------\n")
+        f"-------------------------\n"
+        f"\nCANDIDATE RESULTS:\n"
+        )
     print(largest_county_turnout)
-     # 3. Print the total votes.
-    print("The total number of votes is ", total_votes)
 
-# Determine the percentage of votes for each candidate.
-# 1 Iterate through the candidate list.
+    #txt_file.write(winning_county)
+    txt_file.write(largest_county_turnout) #added#
+        
+    # Determine the percentage of votes for each candidate.
+    # 1 Iterate through the candidate list.
     print("\nCANDIDATE RESULTS\n")
+
     for candidate_name in candidate_votes:
         # 2. Retrieve vote count of a candidate.
         votes = candidate_votes.get(candidate_name)
@@ -114,36 +136,40 @@ with open('c:/users/Takemi Scott Oshiro/Election_Analysis/Resources/election_res
 
         # 4. Print the candidate name, vote count and percentage of votes.
         candidate_results = (f"{candidate_name}: {vote_percentage:.1f}% ({votes:,})\n")
+
         print(candidate_results)
 
-    # Determine winning vote count and candidate.
-    # Determine if the votes are greater than the winning count.
+        txt_file.write(candidate_results) #added#
+        
+        # Determine winning vote count and candidate.
+        # Determine if the votes are greater than the winning count.
         if (votes > winning_count) and (vote_percentage > winning_percentage):
-        # If true then set winning_count = votes and winning_percent = vote_percentage.
+            # If true then set winning_count = votes and winning_percent = vote_percentage.
             winning_count = votes
             winning_percentage = vote_percentage
-        # And, set the winning_candidate equal to the candidate's name.
+
+            # And, set the winning_candidate equal to the candidate's name.
             winning_candidate = candidate_name
 
+    # Print out the winning candidate, vote count and vote percentage.
+    winning_candidate_summary = (
+        f"\n-------------------------\n"
+        f"\nWINNING CANDIDATE SUMMARY:\n"
+        f"WINNER: {winning_candidate}\n"
+        f"WINNING VOTE COUNT: {winning_count:,}\n"
+        f"WINNING PERCENTAGE: {winning_percentage:.1f}%\n"
+        f"-------------------------\n"
+        )
 
-# Print out the winning candidate, vote count and vote percentage.
-        winning_candidate_summary = (
-            f"-------------------------\n"
-            f"Winner: {winning_candidate}\n"
-            f"Winning Vote Count: {winning_count:,}\n"
-            f"Winning Percentage: {winning_percentage:.1f}%\n"
-            f"-------------------------\n")
+    print(winning_candidate_summary)
 
-# Print the Winning Candidate Summary.
-print(winning_candidate_summary)
+    txt_file.write(winning_candidate_summary) #added#
 
-
-
-# Save the candidate results to our text file.
-with open('C:/Users/Takemi Scott Oshiro/Election_Analysis/analysis/election_analysis.txt', 'w') as txt_file:
-    txt_file.write(county_results)
-    txt_file.write(candidate_results)
-    txt_file.write(winning_candidate_summary)        
+#with open(file_to_save, 'w') as txt_file:
+    
+#    txt_file.write(winning_candidate_summary)
+#    txt_file.write(county_results)
+#    txt_file.write(candidate_results) 
 
 # Close the file.
 election_data.close()
